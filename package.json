@@ -1,0 +1,5 @@
+{
+  "name": "wintab",
+  "main": "wintab.js",
+  "gypfile": true
+}
