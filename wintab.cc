@@ -20,12 +20,28 @@ using namespace std;
 int pen_x = -1;
 int pen_y = -1;
 int pen_pressure = -1;
+int pressure_min = -1;
+int pressure_max = -1;
 
 Handle<Value> get_pressure(const Arguments& args) {
     HandleScope scope;
     if (pen_pressure < 0)
         return scope.Close(Null());
     return scope.Close(Number::New(pen_pressure));
+}
+
+Handle<Value> get_pressure_min(const Arguments& args) {
+    HandleScope scope;
+    if (pressure_min < 0)
+        return scope.Close(Null());
+    return scope.Close(Number::New(pressure_min));
+}
+
+Handle<Value> get_pressure_max(const Arguments& args) {
+    HandleScope scope;
+    if (pressure_max < 0)
+        return scope.Close(Null());
+    return scope.Close(Number::New(pressure_max));
 }
 
 HINSTANCE hinst;
@@ -35,6 +51,8 @@ HWND hwnd;
 HCTX hctx;
 LOGCONTEXT lc = {0};
 
+bool overlapped = FALSE;
+
 Handle<Value> peek_message(const Arguments& args) {
     HandleScope scope;
     MSG msg;
@@ -42,7 +60,23 @@ Handle<Value> peek_message(const Arguments& args) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
-    return scope.Close(Null());
+    return scope.Close(Undefined());
+}
+
+Handle<Value> check_overlapped(const Arguments& args) {
+    HandleScope scope;
+    bool tmp = overlapped;
+    overlapped = FALSE;
+    return scope.Close(Boolean::New(tmp));
+}
+
+Handle<Value> enable_context(const Arguments& args) {
+    HandleScope scope;
+    if (hctx) {
+        gpWTEnable(hctx, TRUE);
+        gpWTOverlap(hctx, TRUE);
+    }
+    return scope.Close(Undefined());
 }
 
 HCTX initTablet(HWND hwnd) {
@@ -66,9 +100,6 @@ HCTX initTablet(HWND hwnd) {
         return (HCTX) NULL;
     if (gpWTInfoA(WTI_DEVICES, DVC_NPRESSURE, &Pressure) != sizeof(AXIS))
         return (HCTX) NULL;
-    // test log
-    cout << "pressure min: " << Pressure.axMin << ", max: " << Pressure.axMax << endl;
-    //
     lc.lcInOrgX = 0;
     lc.lcInOrgY = 0;
     lc.lcInExtX = TabletX.axMax;
@@ -77,11 +108,14 @@ HCTX initTablet(HWND hwnd) {
     lc.lcOutOrgY = GetSystemMetrics(SM_YVIRTUALSCREEN);
     lc.lcOutExtX = GetSystemMetrics(SM_CXVIRTUALSCREEN);
     lc.lcOutExtY = -GetSystemMetrics(SM_CYVIRTUALSCREEN);
+    pressure_min = (int) Pressure.axMin;
+    pressure_max = (int) Pressure.axMax;
     return gpWTOpenA(hwnd, &lc, TRUE);
 }
 
 LRESULT msgLoop(HWND hwnd, unsigned msg, WPARAM wp, LPARAM lp) {
     PACKET pkt;
+    Local<Value> callback_arguments[] = {Local<Value>::New(Null())};
     switch (msg) {
     case WM_CREATE:
         hctx = initTablet(hwnd);
@@ -94,6 +128,9 @@ LRESULT msgLoop(HWND hwnd, unsigned msg, WPARAM wp, LPARAM lp) {
             pen_y = (int) pkt.pkY;
             pen_pressure = (int) pkt.pkNormalPressure;
         }
+        break;
+    case WT_CTXOVERLAP:
+        overlapped = TRUE;
         break;
     default:
         return (LRESULT) 0L;
@@ -123,7 +160,11 @@ void init(Handle<Object> exports) {
         (HMENU) NULL, hinst, (LPVOID) NULL
     );
     exports->Set(String::NewSymbol("pressure"), FunctionTemplate::New(get_pressure)->GetFunction());
+    exports->Set(String::NewSymbol("minPressure"), FunctionTemplate::New(get_pressure_min)->GetFunction());
+    exports->Set(String::NewSymbol("maxPressure"), FunctionTemplate::New(get_pressure_max)->GetFunction());
     exports->Set(String::NewSymbol("peekMessage"), FunctionTemplate::New(peek_message)->GetFunction());
+    exports->Set(String::NewSymbol("checkOverlapped"), FunctionTemplate::New(check_overlapped)->GetFunction());
+    exports->Set(String::NewSymbol("enableContext"), FunctionTemplate::New(enable_context)->GetFunction());
 }
 
 NODE_MODULE(wintab, init)
