@@ -132,6 +132,11 @@ LRESULT msgLoop(HWND hwnd, unsigned msg, WPARAM wp, LPARAM lp) {
     case WT_CTXOVERLAP:
         overlapped = TRUE;
         break;
+    case WT_PROXIMITY:
+        pen_x = -1;
+        pen_y = -1;
+        pen_pressure = -1;
+        break;
     default:
         return (LRESULT) 0L;
     }

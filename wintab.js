@@ -26,9 +26,9 @@ function levels() {
 exports.levels = levels;
 
 function pressure() {
-    var _levels = levels();
-    if (_levels === null)
+    var _pressure = wintab.pressure();
+    if (_pressure === null)
         return null;
-    return (wintab.pressure() - wintab.minPressure()) / (_levels - 1);
+    return (_pressure - wintab.minPressure()) / (levels() - 1);
 }
 exports.pressure = pressure;
