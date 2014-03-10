@@ -1,5 +1,22 @@
 {
   "name": "wintab",
+  "version": "0.1.0",
+  "description": "wintab api bindings for node.js",
   "main": "wintab.js",
-  "gypfile": true
+  "gypfile": true,
+  "keywords": [
+    "wacom",
+    "tablet",
+    "pen",
+    "pressure",
+    "windows",
+    "wintab",
+    "api"
+  ],
+  "license": "MIT",
+  "author": "JongChan Choi <disjukr@naver.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/disjukr/node-wintab.git"
+  }
 }
