@@ -1,5 +1,5 @@
 {
-  "name": "wintab",
+  "name": "node-wintab",
   "version": "0.1.0",
   "description": "wintab api bindings for node.js",
   "main": "wintab.js",
