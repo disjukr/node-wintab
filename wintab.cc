@@ -38,9 +38,10 @@ LOGCONTEXT lc = {0};
 Handle<Value> peek_message(const Arguments& args) {
     HandleScope scope;
     MSG msg;
-    PeekMessage(&msg, NULL, 0, 0, PM_REMOVE);
-    TranslateMessage(&msg);
-    DispatchMessage(&msg);
+    while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
     return scope.Close(Null());
 }
 
