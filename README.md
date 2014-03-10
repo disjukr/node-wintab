@@ -20,7 +20,7 @@ npm install node-wintab
 Usage
 ---
 
-```
+```js
 var wintab = require('node-wintab');
 setInterval(function () {
     console.log(wintab.pressure());
