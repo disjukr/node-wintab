@@ -113,7 +113,7 @@ HCTX initTablet(HWND hwnd) {
     return gpWTOpenA(hwnd, &lc, TRUE);
 }
 
-LRESULT msgLoop(HWND hwnd, unsigned msg, WPARAM wp, LPARAM lp) {
+static LRESULT msgLoop(HWND hwnd, unsigned msg, WPARAM wp, LPARAM lp) {
     PACKET pkt;
     switch (msg) {
     case WM_CREATE:
