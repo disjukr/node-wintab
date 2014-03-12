@@ -113,7 +113,7 @@ HCTX initTablet(HWND hwnd) {
     return gpWTOpenA(hwnd, &lc, TRUE);
 }
 
-static LRESULT msgLoop(HWND hwnd, unsigned msg, WPARAM wp, LPARAM lp) {
+LRESULT msgLoop(HWND hwnd, unsigned msg, WPARAM wp, LPARAM lp) {
     PACKET pkt;
     switch (msg) {
     case WM_CREATE:
@@ -145,7 +145,7 @@ static LRESULT msgLoop(HWND hwnd, unsigned msg, WPARAM wp, LPARAM lp) {
 void init(Handle<Object> exports) {
     hinst = (HINSTANCE) GetModuleHandle(NULL);
     wc.style = 0;
-    wc.lpfnWndProc = msgLoop;
+    wc.lpfnWndProc = (WNDPROC) msgLoop;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hInstance = hinst;
