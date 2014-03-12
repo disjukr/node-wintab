@@ -115,7 +115,6 @@ HCTX initTablet(HWND hwnd) {
 
 LRESULT msgLoop(HWND hwnd, unsigned msg, WPARAM wp, LPARAM lp) {
     PACKET pkt;
-    Local<Value> callback_arguments[] = {Local<Value>::New(Null())};
     switch (msg) {
     case WM_CREATE:
         hctx = initTablet(hwnd);
