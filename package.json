@@ -1,6 +1,6 @@
 {
   "name": "node-wintab",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "wintab api bindings for node.js",
   "main": "wintab.js",
   "gypfile": true,
