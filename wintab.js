@@ -25,6 +25,11 @@ function levels() {
 }
 exports.levels = levels;
 
+function isEraser() {
+    return wintab.isEraser();
+}
+exports.isEraser = isEraser;
+
 function pressure() {
     var _pressure = wintab.pressure();
     if (_pressure === null)

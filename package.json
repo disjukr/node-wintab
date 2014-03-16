@@ -1,6 +1,6 @@
 {
   "name": "node-wintab",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "wintab api bindings for node.js",
   "main": "wintab.js",
   "gypfile": true,
@@ -13,6 +13,9 @@
     "wintab",
     "api"
   ],
+  "scripts": {
+    "test": "node-gyp rebuild && node ."
+  },
   "license": "MIT",
   "author": "JongChan Choi <disjukr@naver.com>",
   "repository": {

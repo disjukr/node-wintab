@@ -10,7 +10,7 @@ char* gpszProgramName = "node_wintab";
 
 #include "MSGPACK.H"
 
-#define PACKETDATA (PK_X | PK_Y | PK_BUTTONS | PK_NORMAL_PRESSURE)
+#define PACKETDATA (PK_X | PK_Y | PK_NORMAL_PRESSURE | PK_STATUS)
 #define PACKETMODE PK_BUTTONS
 #include "PKTDEF.H"
 
@@ -22,6 +22,7 @@ int pen_y = -1;
 int pen_pressure = -1;
 int pressure_min = -1;
 int pressure_max = -1;
+bool is_eraser = FALSE;
 
 Handle<Value> get_pressure(const Arguments& args) {
     HandleScope scope;
@@ -42,6 +43,11 @@ Handle<Value> get_pressure_max(const Arguments& args) {
     if (pressure_max < 0)
         return scope.Close(Null());
     return scope.Close(Number::New(pressure_max));
+}
+
+Handle<Value> check_eraser(const Arguments& args) {
+    HandleScope scope;
+    return scope.Close(Boolean::New(is_eraser));
 }
 
 HINSTANCE hinst;
@@ -126,6 +132,7 @@ LRESULT msgLoop(HWND hwnd, unsigned msg, WPARAM wp, LPARAM lp) {
             pen_x = (int) pkt.pkX;
             pen_y = (int) pkt.pkY;
             pen_pressure = (int) pkt.pkNormalPressure;
+            is_eraser = (bool) (pkt.pkStatus & TPS_INVERT);
         }
         break;
     case WT_CTXOVERLAP:
@@ -135,6 +142,7 @@ LRESULT msgLoop(HWND hwnd, unsigned msg, WPARAM wp, LPARAM lp) {
         pen_x = -1;
         pen_y = -1;
         pen_pressure = -1;
+        is_eraser = FALSE;
         break;
     default:
         return (LRESULT) 0L;
@@ -166,6 +174,7 @@ void init(Handle<Object> exports) {
     exports->Set(String::NewSymbol("pressure"), FunctionTemplate::New(get_pressure)->GetFunction());
     exports->Set(String::NewSymbol("minPressure"), FunctionTemplate::New(get_pressure_min)->GetFunction());
     exports->Set(String::NewSymbol("maxPressure"), FunctionTemplate::New(get_pressure_max)->GetFunction());
+    exports->Set(String::NewSymbol("isEraser"), FunctionTemplate::New(check_eraser)->GetFunction());
     exports->Set(String::NewSymbol("peekMessage"), FunctionTemplate::New(peek_message)->GetFunction());
     exports->Set(String::NewSymbol("checkOverlapped"), FunctionTemplate::New(check_overlapped)->GetFunction());
     exports->Set(String::NewSymbol("enableContext"), FunctionTemplate::New(enable_context)->GetFunction());
